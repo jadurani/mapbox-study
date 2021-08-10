@@ -45,17 +45,21 @@ export class MapService {
       //   .setLngLat(marker.geometry.coordinates as [number, number])
       //   .addTo(_this.map);
       // console.log(marker);
+      const graphDiv = document.getElementById("graph-dom");
       new mapboxgl.Marker()
         .setLngLat(marker.geometry.coordinates as [number, number])
+
         .setPopup(
-          new mapboxgl.Popup().setHTML(
-            `
-          <div>
-            <div>#${marker.properties.station_id} - ${marker.properties.location}</div>
-            <small>Rain Value Sum: ${marker.properties.rain_value_sum}</small>
-          </div>
-        `
-          )
+          new mapboxgl.Popup()
+            .setDOMContent(graphDiv)
+          //   .setHTML(
+          //       `
+          //     <div>
+          //       <div>#${marker.properties.station_id} - ${marker.properties.location}</div>
+          //       <small>Rain Value Sum: ${marker.properties.rain_value_sum}</small>
+          //     </div>
+          //   `
+          // )
         )
         .addTo(_this.map);
     });
