@@ -40,7 +40,6 @@ export class MapService {
       closeButton: false,
       closeOnClick: false
     })
-    // .setDOMContent(graphDiv);
 
     this.map.addLayer({
       id: 'sensors-bbsddb',
@@ -56,20 +55,9 @@ export class MapService {
         'circle-stroke-width': 1,
         'circle-stroke-color': '#ffffff'
       }
-    })
-
-
+    });
 
     const _this = this;
-    // SENSOR_DATA.features.forEach((marker) => {
-    //   const newMarker: Marker = new mapboxgl.Marker()
-    //     .setLngLat(marker.geometry.coordinates as [number, number])
-    //     .addTo(_this.map);
-    // });
-
-
-
-
     this.map.on('mouseover', 'sensors-bbsddb', (e) => {
 
        _this.map.getCanvas().style.cursor = 'pointer';
@@ -83,10 +71,6 @@ export class MapService {
         coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
       }
 
-      console.log(e)
-
-      //  console.log('hello', new Date().getTime());
-      //  newMarker.setPopup(popUp)
       popUp.setLngLat(coordinates).setHTML(
         `
           <div>
@@ -95,7 +79,16 @@ export class MapService {
           </div>
         `
       ).addTo(_this.map);
-    // newMarker.on('click', () => console.log('click'));
+    });
+
+    this.map.on('click', 'sensors-bbsddb', function(e) {
+      _this.map.flyTo({
+        center: (e.features[0].geometry as any).coordinates.slice(),
+        zoom: 11,
+        essential: true,
+      });
+
+      popUp.setDOMContent(graphDiv)
     });
 
     this.map.on('mouseleave', 'sensors-bbsddb', function() {
