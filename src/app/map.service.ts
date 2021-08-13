@@ -37,7 +37,7 @@ export class MapService {
   showDataPoints() {
     const graphDiv = document.getElementById("graph-dom");
     let popUp = new mapboxgl.Popup({
-      closeButton: false,
+      closeButton: true,
       closeOnClick: false
     })
 
