@@ -88,12 +88,14 @@ export class MapService {
         essential: true,
       });
 
-      popUp.setDOMContent(graphDiv)
+      popUp
+        .setDOMContent(graphDiv)
+        .setMaxWidth("500px");
     });
 
     this.map.on('mouseleave', 'sensors-bbsddb', function() {
       _this.map.getCanvas().style.cursor = '';
-      popUp.remove();
+      // popUp.remove();
     });
 
   }
