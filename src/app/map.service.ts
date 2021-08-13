@@ -74,9 +74,9 @@ export class MapService {
 
       popUp.setLngLat(coordinates).setHTML(
         `
-          <div>
-            <div>#${stationID} - ${location}</div>
-            <small>Rain Value Sum: ${rainValueSum}</small>
+          <div style="color: #333333;">
+            <div><strong>#${stationID} - ${location}</strong></div>
+            <div>Rain Value Sum: ${rainValueSum}</div>
           </div>
         `
       ).addTo(_this.map);
