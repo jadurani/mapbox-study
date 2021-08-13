@@ -13,6 +13,7 @@ export class MapService {
   lat = 12.599512;
   lng = 120.984222;
   zoom = 5;
+  graphShown = false;
 
   constructor() {
     mapboxgl.accessToken = environment.mapbox.accessToken;
@@ -91,11 +92,17 @@ export class MapService {
       popUp
         .setDOMContent(graphDiv)
         .setMaxWidth("500px");
+
+      _this.graphShown = true;
     });
 
+    popUp.on('close', () => _this.graphShown = false);
+
     this.map.on('mouseleave', 'sensors-bbsddb', function() {
+      if (_this.graphShown) return;
+
       _this.map.getCanvas().style.cursor = '';
-      // popUp.remove();
+      popUp.remove();
     });
 
   }
