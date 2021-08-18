@@ -91,7 +91,7 @@ export class MapService {
 
       popUp
         .setDOMContent(graphDiv)
-        .setMaxWidth("500px");
+        .setMaxWidth("900px");
 
       _this.graphShown = true;
     });
