@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HighchartsChartModule } from 'highcharts-angular';
 import { ChartsModule } from 'ng2-charts';
 
 import { AppComponent } from './app.component';
@@ -12,7 +13,8 @@ import { MapComponent } from './map/map.component';
   ],
   imports: [
     BrowserModule,
-    ChartsModule
+    ChartsModule,
+    HighchartsChartModule
   ],
   providers: [],
   bootstrap: [AppComponent]
