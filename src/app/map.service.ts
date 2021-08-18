@@ -3,7 +3,8 @@ import mapboxgl, { Marker } from 'mapbox-gl';
 import { environment } from "../environments/environment";
 import SENSOR_DATA from '../assets/sensors.json';
 import { fromEvent } from 'rxjs';
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { first } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
@@ -15,7 +16,7 @@ export class MapService {
   zoom = 5;
   graphShown = false;
 
-  constructor() {
+  constructor(private http: HttpClient) {
     mapboxgl.accessToken = environment.mapbox.accessToken;
   }
 
@@ -106,4 +107,42 @@ export class MapService {
     });
 
   }
+
+  getData(stationId: string): Promise<Sensor> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${btoa('noahweb:noaHw3b1116')}`
+      })
+    }
+
+    return this.http.get<Sensor>(
+      `https://philsensors.asti.dost.gov.ph/api/data?station_id=${stationId}`,
+      httpOptions
+    ).pipe(first()).toPromise();
+  }
+}
+
+type Sensor = {
+  dev_id: number;
+  location: string;
+  barangay: string | null;
+  municipality: string;
+  congressional: string;
+  province: string;
+  region: string;
+  latitude: string;
+  longitude: string;
+  elevation: string;
+  type_name: string;
+  status_description: string;
+  date_installed: string;
+  data: SensorData[];
+}
+
+type SensorData = {
+  air_pressure: string | number;
+  dateTimeRead: string;
+  rain_cum: string | number;
+  rain_value: string | number;
 }
