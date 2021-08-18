@@ -11,36 +11,31 @@ export class MapComponent implements OnInit {
   public options: any = {
     chart: {
       type: 'spline',
-      height: 700
     },
     title: {
-      text: 'Monthly Average Temperature'
+      text: `#${SAMPLE_DATA.dev_id} - ${SAMPLE_DATA.location}`
     },
     credits: {
       enabled: false
     },
 
     xAxis: {
-      categories:["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      categories: SAMPLE_DATA.data.map(d => d.dateTimeRead)
 
     },
     series: [
          {
-            name: 'Ahmedabad',
-            data: [3.0, 15.9, 19.5, 16.5, 25.2, 21.5, 25.2,26.5, 23.3, 18.3, 13.9, 9.6]
+            name: 'Rain Cumulative',
+            data: SAMPLE_DATA.data.map(d => +d.rain_cum)
          },
          {
-            name: 'Nadiad',
-            data: [5.2, 2.8, 5.7, 11.3, 17.0, 22.0, 24.8,24.1, 20.1, 14.1, 8.6, 2.5]
+            name: 'Air Pressure',
+            data: SAMPLE_DATA.data.map(d => +d.air_pressure)
          },
          {
-            name: 'Surat',
-            data: [4.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
+            name: 'Rain Value',
+            data: SAMPLE_DATA.data.map(d => +d.rain_value)
          },
-         {
-            name: 'Mumbai',
-            data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
-         }
       ]
   }
 
