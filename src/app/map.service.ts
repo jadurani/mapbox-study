@@ -84,6 +84,7 @@ export class MapService {
     });
 
     this.map.on('click', 'sensors-bbsddb', function(e) {
+      graphDiv.hidden = false;
       _this.map.flyTo({
         center: (e.features[0].geometry as any).coordinates.slice(),
         zoom: 11,
