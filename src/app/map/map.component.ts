@@ -10,6 +10,7 @@ import * as Highcharts from 'highcharts';
 export class MapComponent implements OnInit {
   public options: any = {
     chart: {
+      // type: 'area',
       type: 'spline',
     },
     title: {
@@ -23,15 +24,30 @@ export class MapComponent implements OnInit {
       categories: SAMPLE_DATA_2.data.map(d => d.dateTimeRead),
       tickInterval: 10,
     },
+    yAxis: {
+      plotBands: [
+        {
+          from: 1000,
+          to: 1002.5,
+          color: 'rgba(68, 170, 213, 0.1)',
+          label: {
+            text: 'Light air',
+            style: {
+              color: '#606060'
+            }
+          }
+        },
+      ],
+    },
     series: [
          {
             name: 'Rain Cumulative',
             data: SAMPLE_DATA_2.data.map(d => +d.rain_cum)
          },
-         {
-            name: 'Air Pressure',
-            data: SAMPLE_DATA_2.data.map(d => +d.air_pressure)
-         },
+        //  {
+        //     name: 'Air Pressure',
+        //     data: SAMPLE_DATA_2.data.map(d => +d.air_pressure)
+        //  },
          {
             name: 'Rain Value',
             data: SAMPLE_DATA_2.data.map(d => +d.rain_value)
