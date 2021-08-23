@@ -17,7 +17,7 @@ export class MapService {
   graphShown = false;
 
   constructor(private http: HttpClient) {
-    mapboxgl.accessToken = environment.mapbox.accessToken;
+    (mapboxgl as any).accessToken = environment.mapbox.accessToken;
   }
 
   buildMap() {

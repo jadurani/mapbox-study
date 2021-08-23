@@ -1,0 +1,27 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+
+
+type SensorType =
+ | 'arg' // Auomated Rain Gauge
+ | 'wlms' // Water LEvel Monitoring System
+ | 'aws' // Automated Weather Stations
+ | 'awlmsarg' // Waterlevel & Rain
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SensorApiService {
+  private BASE_URL = 'http://202.90.159.72:8000/api/sensors';
+
+  constructor(private http: HttpClient) { }
+
+  getSensors(type: SensorType) {
+    const param = type ? `?sensor_type=${type}` : '';
+    return this.http.get(`${this.BASE_URL}${param}`);
+  }
+
+  getSensorData(id: number) {
+    return this.http.get(`${this.BASE_URL}?sensor=${id}`);
+  }
+}

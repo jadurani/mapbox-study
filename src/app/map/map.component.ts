@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MapService } from '../map.service';
 import * as Highcharts from 'highcharts';
+import { SensorApiService } from '../sensor-api.service';
+
 
 @Component({
   selector: 'app-map',
@@ -55,15 +57,20 @@ export class MapComponent implements OnInit {
       ]
   }
 
-  constructor(private map: MapService) { }
+  constructor(
+    private map: MapService,
+    private sensorApi: SensorApiService
+  ) { }
 
   ngOnInit() {
     this.map.buildMap();
     Highcharts.chart('graph-dom', this.options);
     this.map.getData('166')
       .then(v => console.log({v}));
-  }
 
+    this.sensorApi.getSensors('wlms').subscribe(d => console.log(d));
+    this.sensorApi.getSensorData(166).subscribe(d => console.log(d));
+  }
 }
 
 
