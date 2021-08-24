@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
-import mapboxgl, { Marker } from 'mapbox-gl';
+import mapboxgl from 'mapbox-gl';
 import { environment } from "../environments/environment";
-import SENSOR_DATA from '../assets/sensors.json';
 import { fromEvent } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { first } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
@@ -16,7 +13,7 @@ export class MapService {
   zoom = 5;
   graphShown = false;
 
-  constructor(private http: HttpClient) {
+  constructor() {
     (mapboxgl as any).accessToken = environment.mapbox.accessToken;
   }
 
@@ -107,20 +104,6 @@ export class MapService {
       popUp.remove();
     });
 
-  }
-
-  getData(stationId: string): Promise<Sensor> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${btoa('noahweb:noaHw3b1116')}`
-      })
-    }
-
-    return this.http.get<Sensor>(
-      `https://philsensors.asti.dost.gov.ph/api/data?station_id=${stationId}`,
-      httpOptions
-    ).pipe(first()).toPromise();
   }
 }
 
