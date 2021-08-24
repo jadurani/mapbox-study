@@ -13,6 +13,8 @@ export class MapService {
   zoom = 5;
   graphShown = false;
 
+  sensorLayers = [];
+
   constructor() {
     (mapboxgl as any).accessToken = environment.mapbox.accessToken;
   }
@@ -27,44 +29,71 @@ export class MapService {
 
    this.map.addControl(new mapboxgl.NavigationControl());
 
-   fromEvent(this.map, 'load')
-    .subscribe(() => {
-      this.showDataPoints();
-    })
+  //  fromEvent(this.map, 'load')
+  //   .subscribe(() => {
+  //     this.showDataPoints();
+  //   })
   }
 
-  showDataPoints() {
-    const graphDiv = document.getElementById("graph-dom");
-    let popUp = new mapboxgl.Popup({
-      closeButton: true,
-      closeOnClick: false
-    })
-
+  /**
+   * Adds both source and layer to the map
+   */
+  addSensorLayer(sensorType: string, data: GeoJSON.FeatureCollection<GeoJSON.Geometry>) {
+    // this.map.addSource(sensorType, );
     this.map.addLayer({
-      id: 'sensors-bbsddb',
+      id: sensorType,
       type: 'circle',
       source: {
-        type: 'vector',
-        url: 'mapbox://jadurani.asse9xyo',
+        type: 'geojson',
+        data
       },
-      'source-layer': 'sensors-bbsddb',
       paint: {
-        'circle-color': '#4264fb',
+        'circle-color': 'red',
         'circle-radius': 6,
         'circle-stroke-width': 1,
         'circle-stroke-color': '#ffffff'
       }
     });
 
-    const _this = this;
-    this.map.on('mouseover', 'sensors-bbsddb', (e) => {
+    this.sensorLayers.push(sensorType);
+    this.showDataPoints(sensorType);
+  }
 
+  showDataPoints(sensorLayer: string) {
+    const graphDiv = document.getElementById("graph-dom");
+    let popUp = new mapboxgl.Popup({
+      closeButton: true,
+      closeOnClick: false
+    })
+
+    // this.map.addLayer({
+    //   id: 'sensors-bbsddb',
+    //   type: 'circle',
+    //   source: {
+    //     type: 'vector',
+    //     url: 'mapbox://jadurani.asse9xyo',
+    //   },
+    //   'source-layer': 'sensors-bbsddb',
+    //   paint: {
+    //     'circle-color': '#4264fb',
+    //     'circle-radius': 6,
+    //     'circle-stroke-width': 1,
+    //     'circle-stroke-color': '#ffffff'
+    //   }
+    // });
+    const _this = this;
+    this.map.on('mouseover', sensorLayer, (e) => {
+      console.log(e);
        _this.map.getCanvas().style.cursor = 'pointer';
 
       const coordinates = (e.features[0].geometry as any).coordinates.slice();
       const location = e.features[0].properties.location;
       const stationID = e.features[0].properties.station_id;
-      const rainValueSum = e.features[0].properties.rain_value_sum;
+      const typeName = e.features[0].properties.type_name;
+      const status = e.features[0].properties.status_description;
+      const dateInstalled = e.features[0].properties.date_installed;
+      const province = e.features[0].properties.province;
+
 
       while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
         coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
@@ -74,13 +103,16 @@ export class MapService {
         `
           <div style="color: #333333;">
             <div><strong>#${stationID} - ${location}</strong></div>
-            <div>Rain Value Sum: ${rainValueSum}</div>
+            <div>Type: ${typeName}</div>
+            <div>Status: ${status}</div>
+            <div>Date Installed: ${dateInstalled}</div>
+            <div>Province: ${province}</div>
           </div>
         `
       ).addTo(_this.map);
     });
 
-    this.map.on('click', 'sensors-bbsddb', function(e) {
+    this.map.on('click', sensorLayer, function(e) {
       graphDiv.hidden = false;
       _this.map.flyTo({
         center: (e.features[0].geometry as any).coordinates.slice(),
@@ -97,7 +129,7 @@ export class MapService {
 
     popUp.on('close', () => _this.graphShown = false);
 
-    this.map.on('mouseleave', 'sensors-bbsddb', function() {
+    this.map.on('mouseleave', sensorLayer, function() {
       if (_this.graphShown) return;
 
       _this.map.getCanvas().style.cursor = '';
