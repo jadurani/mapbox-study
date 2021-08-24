@@ -18,7 +18,7 @@ export class SensorApiService {
 
   getSensors(type: SensorType) {
     const param = type ? `?sensor_type=${type}` : '';
-    return this.http.get(`${this.BASE_URL}/api/sensors${param}`);
+    return this.http.get(`${this.BASE_URL}/api/sensors/${param}`);
   }
 
   getSensorData(id: number) {

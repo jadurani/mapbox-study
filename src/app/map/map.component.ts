@@ -64,12 +64,12 @@ export class MapComponent implements OnInit {
 
   ngOnInit() {
     this.map.buildMap();
-    Highcharts.chart('graph-dom', this.options);
+    // Highcharts.chart('graph-dom', this.options);
 
     // this.sensorApi.getSensors('wlms').subscribe(d => console.log(d));
     this.sensorApi.getSensors('wlms')
       .subscribe((data: GeoJSON.FeatureCollection<GeoJSON.Geometry>) => this.map.addSensorLayer('wlms', data));
-    this.sensorApi.getSensorData(166).subscribe(d => console.log(d));
+    // this.sensorApi.getSensorData(166).subscribe(d => console.log(d));
   }
 }
 
