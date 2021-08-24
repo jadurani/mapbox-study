@@ -12,16 +12,16 @@ type SensorType =
   providedIn: 'root'
 })
 export class SensorApiService {
-  private BASE_URL = 'http://202.90.159.72:8000/api/sensors';
+  private BASE_URL = 'http://202.90.159.72:8000';
 
   constructor(private http: HttpClient) { }
 
   getSensors(type: SensorType) {
     const param = type ? `?sensor_type=${type}` : '';
-    return this.http.get(`${this.BASE_URL}${param}`);
+    return this.http.get(`${this.BASE_URL}/api/sensors${param}`);
   }
 
   getSensorData(id: number) {
-    return this.http.get(`${this.BASE_URL}?sensor=${id}`);
+    return this.http.get(`${this.BASE_URL}/api/sensor-data?sensor=${id}`);
   }
 }
