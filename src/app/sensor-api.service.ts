@@ -6,7 +6,7 @@ type SensorType =
  | 'arg' // Auomated Rain Gauge
  | 'wlms' // Water LEvel Monitoring System
  | 'aws' // Automated Weather Stations
- | 'awlmsarg' // Waterlevel & Rain
+ | 'wlmsarg' // Waterlevel & Rain
 
 @Injectable({
   providedIn: 'root'

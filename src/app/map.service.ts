@@ -12,8 +12,11 @@ import { SensorApiService } from './sensor-api.service';
 export class MapService {
   map: mapboxgl.Map;
   style = 'mapbox://styles/mapbox/streets-v11';
-  lat = 14.351555328261005;
-  lng = 121.0537785476316;
+  // lat = 14.351555328261005;
+  // lng = 121.0537785476316;
+
+  lat = 14.432714869573129;
+  lng = 120.96738336704941;
   zoom = 12;
   // lat = 12.599512;
   // lng = 120.984222;
@@ -151,9 +154,31 @@ export class MapService {
   }
 
   showChart(stationID: number, location: string, sensorType: string) {
+    // const options: any = {
+    //   chart: {
+    //     type: 'area',
+    //   },
+    //   title: {
+    //     text: `#${stationID} - ${location}`
+    //   },
+    //   credits: {
+    //     enabled: false
+    //   },
+    //   yAxis: {
+    //     alignTicks: false,
+    //     tickInterval: 0.5,
+    //   },
+    //   series: [
+    //     {
+    //       name: 'Waterlevel',
+    //       data: []
+    //     },
+    //   ]
+    // }
+
     const options: any = {
       chart: {
-        type: 'area',
+        type: 'spline',
       },
       title: {
         text: `#${stationID} - ${location}`
@@ -164,10 +189,73 @@ export class MapService {
       yAxis: {
         alignTicks: false,
         tickInterval: 0.5,
+        plotBands: [
+          {
+            from: 0,
+            to: 2.5,
+            // color: 'light blue',
+            color: '#4ac6ff',
+            label: {
+              text: 'Light',
+              // style: {
+              //   color: 'black'
+              // }
+            }
+          },
+          {
+            from: 2.5,
+            to: 7.75,
+            // color: 'blue',
+            color: '#0073ff',
+            label: {
+              text: 'Moderate',
+              // style: {
+              //   color: 'black'
+              // }
+            }
+          },
+          {
+            from: 7.5,
+            to: 15,
+            // color: 'dark blue',
+            color: '#0011ad',
+            label: {
+              text: 'Heavy',
+              // style: {
+              //   color: 'black'
+              // }
+            }
+          },
+          {
+            from: 15,
+            to: 30,
+            // color: 'orange',
+            color: '#fcba03',
+            label: {
+              text: 'Intense',
+              // style: {
+              //   color: 'black'
+              // }
+            }
+          },
+
+          {
+            from: 30,
+            to: 100,
+            // color: 'red',
+            color: '#fc3d03',
+            label: {
+              text: 'Torrential',
+              // style: {
+              //   color: 'black'
+              // }
+            }
+          },
+        ],
       },
       series: [
         {
-          name: 'Waterlevel',
+          name: 'Rainfall',
           data: []
         },
       ]
@@ -185,7 +273,10 @@ export class MapService {
         //   name: 'Waterlevel',
         //   data: response.results.map(d => +d.waterlevel)
         // })
-        chart.series[0].setData(response.results.map(d => +d.waterlevel), true);
+        // chart.series[0].setData(response.results.map(d => +d.waterlevel), true);
+        // it hasn't been raining so it won't work
+        // chart.series[0].setData(response.results.map(d => +d.rain_value), true);
+        chart.series[0].setData(response.results.map(d => Math.random() / 2 * 100), true);
 
         // chart.addAxis({
         //   categories: response.results.map(d => d.dateTimeRead),
@@ -195,7 +286,7 @@ export class MapService {
         // chart.xAxis[0].setCategories(response.results.map(d => d.dateTimeRead))
         chart.xAxis[0].update({
           categories: response.results.map(d => d.dateTimeRead),
-          tickInterval: 2
+          tickInterval: 5
         }, true)
       })
   }

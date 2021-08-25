@@ -67,7 +67,7 @@ export class MapComponent implements OnInit {
     // Highcharts.chart('graph-dom', this.options);
 
     // this.sensorApi.getSensors('wlms').subscribe(d => console.log(d));
-    this.sensorApi.getSensors('wlms')
+    this.sensorApi.getSensors('wlmsarg')
       .subscribe((data: GeoJSON.FeatureCollection<GeoJSON.Geometry>) => this.map.addSensorLayer('wlms', data));
     // this.sensorApi.getSensorData(166).subscribe(d => console.log(d));
   }
