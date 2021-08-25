@@ -22,6 +22,6 @@ export class SensorApiService {
   }
 
   getSensorData(id: number) {
-    return this.http.get(`${this.BASE_URL}/api/sensor-data?sensor=${id}`);
+    return this.http.get(`${this.BASE_URL}/api/sensor-data/?sensor=${id}`);
   }
 }

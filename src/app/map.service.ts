@@ -2,20 +2,27 @@ import { Injectable } from '@angular/core';
 import mapboxgl from 'mapbox-gl';
 import { environment } from "../environments/environment";
 import { fromEvent } from 'rxjs';
+import { first } from 'rxjs/operators'
+import * as Highcharts from 'highcharts';
+import { SensorApiService } from './sensor-api.service';
+
 @Injectable({
   providedIn: 'root'
 })
 export class MapService {
   map: mapboxgl.Map;
   style = 'mapbox://styles/mapbox/streets-v11';
-  lat = 12.599512;
-  lng = 120.984222;
-  zoom = 5;
+  lat = 14.351555328261005;
+  lng = 121.0537785476316;
+  zoom = 12;
+  // lat = 12.599512;
+  // lng = 120.984222;
+  // zoom = 5;
   graphShown = false;
 
   sensorLayers = [];
 
-  constructor() {
+  constructor(private sensorApi: SensorApiService) {
     (mapboxgl as any).accessToken = environment.mapbox.accessToken;
   }
 
@@ -120,9 +127,15 @@ export class MapService {
         essential: true,
       });
 
+      const stationID = e.features[0].properties.station_id;
+      const location = e.features[0].properties.location;
+      const pk = e.features[0].properties.pk;
+
       popUp
         .setDOMContent(graphDiv)
         .setMaxWidth("900px");
+
+      _this.showChart(+pk, location, sensorLayer)
 
       _this.graphShown = true;
     });
@@ -135,9 +148,61 @@ export class MapService {
       _this.map.getCanvas().style.cursor = '';
       popUp.remove();
     });
+  }
 
+  showChart(stationID: number, location: string, sensorType: string) {
+    const options: any = {
+      chart: {
+        type: 'area',
+      },
+      title: {
+        text: `#${stationID} - ${location}`
+      },
+      credits: {
+        enabled: false
+      },
+      yAxis: {
+        alignTicks: false,
+        tickInterval: 0.5,
+      },
+      series: [
+        {
+          name: 'Waterlevel',
+          data: []
+        },
+      ]
+    }
+
+    const chart = Highcharts.chart('graph-dom', options)
+    chart.showLoading();
+
+    this.sensorApi.getSensorData(stationID)
+      .pipe(first())
+      .toPromise()
+      .then((response: any) => {
+        chart.hideLoading()
+        // chart.series.push({
+        //   name: 'Waterlevel',
+        //   data: response.results.map(d => +d.waterlevel)
+        // })
+        chart.series[0].setData(response.results.map(d => +d.waterlevel), true);
+
+        // chart.addAxis({
+        //   categories: response.results.map(d => d.dateTimeRead),
+        //   tickInterval: 10,
+        // }, true, true);
+
+        // chart.xAxis[0].setCategories(response.results.map(d => d.dateTimeRead))
+        chart.xAxis[0].update({
+          categories: response.results.map(d => d.dateTimeRead),
+          tickInterval: 2
+        }, true)
+      })
   }
 }
+
+
+
 
 type Sensor = {
   dev_id: number;
