@@ -16,7 +16,7 @@ export class MapService {
   style = 'mapbox://styles/mapbox/streets-v11';
   lat = 27.296997030678092;
   lng = 138.72896087442456;
-  zoom = 3;
+  zoom = 5;
   graphShown = false;
 
   constructor(private http: HttpClient) {
@@ -126,19 +126,18 @@ export class MapService {
   }
 
   private _handleTyphoonPath() {
-    const ruler = new CheapRuler(1, 'nauticalmiles');
-
     const pointsAndPolygons = TYPHOON_PATH.features.map (feature => {
       const lng = feature.geometry.coordinates[0];
       const lat = feature.geometry.coordinates[1];
       const errorRadiusDeg = feature.properties.radius;
 
-      const errorRadiusKm = ruler.distance([lng, lat], [lng + errorRadiusDeg, lat]);
-      const circle = turf.circle([lng, lat], errorRadiusKm, {steps: 32, units: 'kilometers'});
+      // const ruler = new CheapRuler(lat, 'nauticalmiles');
+      // const errorRadiusKm = ruler.distance([lng, lat], [lng + errorRadiusDeg, lat]);
+      // console.log({lat, ruler, errorRadiusDeg, errorRadiusKm});
+      const circle = turf.circle([lng, lat], errorRadiusDeg, {steps: 32, units: 'kilometers'});
 
       return {
         circle,
-        errorRadiusKm,
         coords: feature.geometry.coordinates as Point
       }
     });
@@ -159,7 +158,7 @@ export class MapService {
     // }
 
     // console.log(JSON.stringify(combinedCircles))
-    console.log(JSON.stringify(fc));
+    // console.log(JSON.stringify(fc));
     this.map.addLayer({
       id: 'samplePolygon',
       type: 'fill',
