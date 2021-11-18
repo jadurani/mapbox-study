@@ -30,10 +30,6 @@ export class MapService {
 
    this.map.addControl(new mapboxgl.NavigationControl());
 
-   fromEvent(this.map, 'load')
-    .subscribe(() => {
-      this.showDataPoints();
-    })
   }
 
   showDataPoints() {
