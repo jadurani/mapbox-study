@@ -1,0 +1,85 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    140.6,
+                    23.4
+                ]
+            },
+            "properties": {
+                "date": "November 28, 2021 00:00",
+                "typhoon_name": "TY 2120 MALOU (2120)",
+                "radius": 5,
+                "typhoon_class": "TY"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    141.55,
+                    24.9
+                ]
+            },
+            "properties": {
+                "date": "November 28, 2021 06:00",
+                "typhoon_name": "TY 2120 MALOU (2120)",
+                "radius": 10,
+                "typhoon_class": "TY"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    142.5,
+                    26.4
+                ]
+            },
+            "properties": {
+                "date": "November 28, 2021 12:00",
+                "typhoon_name": "TY 2120 MALOU (2120)",
+                "radius": 15,
+                "typhoon_class": "TY"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    143.7,
+                    28.1
+                ]
+            },
+            "properties": {
+                "date": "November 28, 2021 18:00",
+                "typhoon_name": "TY 2120 MALOU (2120)",
+                "radius": 20,
+                "typhoon_class": "TY"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    144.9,
+                    29.8
+                ]
+            },
+            "properties": {
+                "date": "November 29, 2021 00:00",
+                "typhoon_name": "TY 2120 MALOU (2120)",
+                "radius": 25,
+                "typhoon_class": "TY"
+            }
+        }
+    ]
+}
