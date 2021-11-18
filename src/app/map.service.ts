@@ -181,7 +181,7 @@ export class MapService {
       const nextPoint = nextPP.coords;
       const errorRadius = pp.errorRadius;
 
-      const ruler = new CheapRuler(currentPoint[1], 'nauticalmiles');
+      const ruler = new CheapRuler(currentPoint[1], 'kilometers');
       let bearing = ruler.bearing(currentPoint, nextPoint);
       let p1 = ruler.destination(nextPoint, errorRadius, bearing + 90);
       const radius = index === 0 ? errorRadius : pointsAndPolygons[index - 1].errorRadius
@@ -192,12 +192,13 @@ export class MapService {
       polygons.push(polygon);
     });
 
-    let polygonUnion = polygons[0] as any;
-    for (let i = 1; i < polygons.length; i++) {
-      polygonUnion = turf.union(polygonUnion, polygons[i]);
+
+    const maw = polygons.concat(...pointsAndPolygons.map(pp => pp.circle))
+    let polygonUnion = maw[0] as any;
+    for (let i = 1; i < maw.length; i++) {
+      polygonUnion = turf.union(polygonUnion, maw[i]);
     }
 
-    // const forecastPolygon = turf.union(polygons[0], polygons[1]);
     console.log({polygonUnion});
 
 
@@ -209,7 +210,8 @@ export class MapService {
         data: polygonUnion
       },
       paint: {
-        'fill-color': '#000000',
+        'fill-outline-color': '#6e6e6e',
+        'fill-color': '#ffffff',
         'fill-opacity': 0.4,
       }
     })
