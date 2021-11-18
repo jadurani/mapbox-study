@@ -159,19 +159,19 @@ export class MapService {
     // }
 
     // console.log(JSON.stringify(combinedCircles))
-    console.log(JSON.stringify(combined));
-    // this.map.addLayer({
-    //   id: 'samplePolygon',
-    //   type: 'fill',
-    //   source: {
-    //     type: 'geojson',
-    //     data: combined,
-    //   },
-    //   paint: {
-    //     'fill-color': '#000000',
-    //     'fill-opacity': 0.4,
-    //   }
-    // });
+    console.log(JSON.stringify(fc));
+    this.map.addLayer({
+      id: 'samplePolygon',
+      type: 'fill',
+      source: {
+        type: 'geojson',
+        data: fc,
+      },
+      paint: {
+        'fill-color': '#000000',
+        'fill-opacity': 0.4,
+      }
+    });
 
     // const polygons = [];
 
