@@ -138,13 +138,13 @@ export class MapService {
 
       return {
         circle,
+        errorRadius: errorRadiusDeg,
         coords: feature.geometry.coordinates as Point
       }
     });
 
 
     const fc = turf.featureCollection(pointsAndPolygons.map(pp => pp.circle));
-    const combined = turf.combine(fc);
 
     // let combinedCircles = pointsAndPolygons[0].circle as any;
     // for (let i=1; i<pointsAndPolygons.length; i++) {
@@ -160,7 +160,7 @@ export class MapService {
     // console.log(JSON.stringify(combinedCircles))
     // console.log(JSON.stringify(fc));
     this.map.addLayer({
-      id: 'samplePolygon',
+      id: 'circles',
       type: 'fill',
       source: {
         type: 'geojson',
@@ -172,40 +172,47 @@ export class MapService {
       }
     });
 
-    // const polygons = [];
+    const polygons = [];
 
-    // pointsAndPolygons.forEach((pp, index) => {
-    //   if (index + 1 >= pointsAndPolygons.length) return;
-    //   const currentPoint = pp.coords;
-    //   const nextPP = pointsAndPolygons[index + 1];
-    //   const nextPoint = nextPP.coords;
-    //   const errorRadius = pp.errorRadiusKm;
+    pointsAndPolygons.forEach((pp, index) => {
+      if (index + 1 >= pointsAndPolygons.length) return;
+      const currentPoint = pp.coords;
+      const nextPP = pointsAndPolygons[index + 1];
+      const nextPoint = nextPP.coords;
+      const errorRadius = pp.errorRadius;
 
-    //   let bearing = ruler.bearing(currentPoint, nextPoint);
-    //   let p1 = ruler.destination(nextPoint, errorRadius, bearing + 90);
-    //   let p2 = ruler.destination(currentPoint, nextPP.errorRadiusKm, bearing + 90);
-    //   let p3 = ruler.destination(currentPoint, nextPP.errorRadiusKm, bearing - 90);
-    //   let p4 = ruler.destination(nextPoint, errorRadius, bearing - 90);
-    //   const polygon = turf.polygon([[p1, p2, p3, p4, p1]]);
-    //   polygons.push(polygon);
-    // })
+      const ruler = new CheapRuler(currentPoint[1], 'nauticalmiles');
+      let bearing = ruler.bearing(currentPoint, nextPoint);
+      let p1 = ruler.destination(nextPoint, errorRadius, bearing + 90);
+      const radius = index === 0 ? errorRadius : pointsAndPolygons[index - 1].errorRadius
+      let p2 = ruler.destination(currentPoint, radius, bearing + 90);
+      let p3 = ruler.destination(currentPoint, radius, bearing - 90);
+      let p4 = ruler.destination(nextPoint, errorRadius, bearing - 90);
+      const polygon = turf.polygon([[p1, p2, p3, p4, p1]]);
+      polygons.push(polygon);
+    });
+
+    let polygonUnion = polygons[0] as any;
+    for (let i = 1; i < polygons.length; i++) {
+      polygonUnion = turf.union(polygonUnion, polygons[i]);
+    }
 
     // const forecastPolygon = turf.union(polygons[0], polygons[1]);
-    // console.log(forecastPolygon);
+    console.log({polygonUnion});
 
 
-    // this.map.addLayer({
-    //   id: 'samplePolygon',
-    //   type: 'fill',
-    //   source: {
-    //     type: 'geojson',
-    //     data: forecastPolygon
-    //   },
-    //   paint: {
-    //     'fill-color': '#000000',
-    //     'fill-opacity': 0.4,
-    //   }
-    // })
+    this.map.addLayer({
+      id: 'typhoon-path',
+      type: 'fill',
+      source: {
+        type: 'geojson',
+        data: polygonUnion
+      },
+      paint: {
+        'fill-color': '#000000',
+        'fill-opacity': 0.4,
+      }
+    })
   }
 }
 
