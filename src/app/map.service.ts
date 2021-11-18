@@ -14,9 +14,9 @@ import * as turf from '@turf/turf';
 export class MapService {
   map: mapboxgl.Map;
   style = 'mapbox://styles/mapbox/streets-v11';
-  lat = 27.296997030678092;
-  lng = 138.72896087442456;
-  zoom = 5;
+  lat = 25.13983289575278;
+  lng = 142.058834577174;
+  zoom = 7;
   graphShown = false;
 
   constructor(private http: HttpClient) {
@@ -126,15 +126,17 @@ export class MapService {
   }
 
   private _handleTyphoonPath() {
+    const pointsFC = [];
+
     const pointsAndPolygons = TYPHOON_PATH.features.map (feature => {
       const lng = feature.geometry.coordinates[0];
       const lat = feature.geometry.coordinates[1];
       const errorRadiusDeg = feature.properties.radius;
-
+      pointsFC.push(turf.point(feature.geometry.coordinates))
       // const ruler = new CheapRuler(lat, 'nauticalmiles');
       // const errorRadiusKm = ruler.distance([lng, lat], [lng + errorRadiusDeg, lat]);
       // console.log({lat, ruler, errorRadiusDeg, errorRadiusKm});
-      const circle = turf.circle([lng, lat], errorRadiusDeg, {steps: 32, units: 'kilometers'});
+      const circle = turf.circle([lng, lat], errorRadiusDeg, {steps: 32, units: 'kilometers', properties: feature.properties});
 
       return {
         circle,
@@ -159,18 +161,6 @@ export class MapService {
 
     // console.log(JSON.stringify(combinedCircles))
     // console.log(JSON.stringify(fc));
-    this.map.addLayer({
-      id: 'circles',
-      type: 'fill',
-      source: {
-        type: 'geojson',
-        data: fc,
-      },
-      paint: {
-        'fill-color': '#000000',
-        'fill-opacity': 0.4,
-      }
-    });
 
     const polygons = [];
 
@@ -203,18 +193,88 @@ export class MapService {
 
 
     this.map.addLayer({
-      id: 'typhoon-path',
+      id: 'typhoon-path-fill',
       type: 'fill',
       source: {
         type: 'geojson',
         data: polygonUnion
       },
       paint: {
-        'fill-outline-color': '#6e6e6e',
-        'fill-color': '#ffffff',
-        'fill-opacity': 0.4,
+        'fill-color': '#fff',
+        'fill-opacity': 0.3,
       }
-    })
+    });
+
+    this.map.addLayer({
+      id: 'typhoon-path-line',
+      type: 'line',
+      source: {
+        type: 'geojson',
+        data: polygonUnion
+      },
+      paint: {
+        'line-color': '#000',
+        'line-width': 2,
+        'line-opacity': 0.6,
+        'line-blur': 0.5,
+      }
+    });
+
+    this.map.addLayer({
+      id: 'circle-outline',
+      type: 'line',
+      source: {
+        type: 'geojson',
+        data: fc,
+      },
+      paint: {
+        'line-opacity': 1,
+        'line-width': 2,
+        'line-color': [
+          "interpolate",
+          ["linear"],
+          ["get", "forecast"],
+          24,
+          "#e31c02",
+          48,
+          "#0202e3",
+          72,
+          "#00ad20",
+          96,
+          "#f7e814",
+          120,
+          "#9514f7",
+        ]
+      }
+    });
+
+    this.map.addLayer({
+      id: 'circles',
+      type: 'circle',
+      source: {
+        type: 'geojson',
+        data: turf.featureCollection(pointsFC),
+      },
+      paint: {
+        'circle-opacity': 1,
+        'circle-color': [
+          "interpolate",
+          ["linear"],
+          ["get", "forecast"],
+          24,
+          "#e31c02",
+          48,
+          "#0202e3",
+          72,
+          "#00ad20",
+          96,
+          "#f7e814",
+          120,
+          "#9514f7",
+        ]
+      }
+    });
+
   }
 }
 

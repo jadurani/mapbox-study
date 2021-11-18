@@ -13,8 +13,9 @@
             "properties": {
                 "date": "November 28, 2021 00:00",
                 "typhoon_name": "TY 2120 MALOU (2120)",
-                "radius": 5,
-                "typhoon_class": "TY"
+                "radius": 10,
+                "typhoon_class": "TY",
+                "forecast": 24
             }
         },
         {
@@ -29,8 +30,9 @@
             "properties": {
                 "date": "November 28, 2021 06:00",
                 "typhoon_name": "TY 2120 MALOU (2120)",
-                "radius": 10,
-                "typhoon_class": "TY"
+                "radius": 15,
+                "typhoon_class": "TY",
+                "forecast": 48
             }
         },
         {
@@ -45,8 +47,9 @@
             "properties": {
                 "date": "November 28, 2021 12:00",
                 "typhoon_name": "TY 2120 MALOU (2120)",
-                "radius": 15,
-                "typhoon_class": "TY"
+                "radius": 20,
+                "typhoon_class": "TY",
+                "forecast": 72
             }
         },
         {
@@ -61,8 +64,9 @@
             "properties": {
                 "date": "November 28, 2021 18:00",
                 "typhoon_name": "TY 2120 MALOU (2120)",
-                "radius": 20,
-                "typhoon_class": "TY"
+                "radius": 25,
+                "typhoon_class": "TY",
+                "forecast": 96
             }
         },
         {
@@ -77,8 +81,9 @@
             "properties": {
                 "date": "November 29, 2021 00:00",
                 "typhoon_name": "TY 2120 MALOU (2120)",
-                "radius": 25,
-                "typhoon_class": "TY"
+                "radius": 35,
+                "typhoon_class": "TY",
+                "forecast": 120
             }
         }
     ]
