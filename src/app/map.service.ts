@@ -5,15 +5,18 @@ import SENSOR_DATA from '../assets/sensors.json';
 import { fromEvent } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { first } from 'rxjs/operators';
+import CheapRuler, { Point } from 'cheap-ruler';
+import TYPHOON_PATH from '../assets/typhoon-path.json';
+import * as turf from '@turf/turf';
 @Injectable({
   providedIn: 'root'
 })
 export class MapService {
   map: mapboxgl.Map;
   style = 'mapbox://styles/mapbox/streets-v11';
-  lat = 12.599512;
-  lng = 120.984222;
-  zoom = 5;
+  lat = 25.13983289575278;
+  lng = 142.058834577174;
+  zoom = 7;
   graphShown = false;
 
   constructor(private http: HttpClient) {
@@ -28,12 +31,11 @@ export class MapService {
       center: [this.lng, this.lat]
     });
 
-   this.map.addControl(new mapboxgl.NavigationControl());
-
-   fromEvent(this.map, 'load')
-    .subscribe(() => {
-      this.showDataPoints();
-    })
+    this.map.addControl(new mapboxgl.NavigationControl());
+    fromEvent(this.map, 'load')
+      .subscribe(() => {
+        this._handleTyphoonPath();
+      });
   }
 
   showDataPoints() {
@@ -121,6 +123,158 @@ export class MapService {
       `https://philsensors.asti.dost.gov.ph/api/data?station_id=${stationId}`,
       httpOptions
     ).pipe(first()).toPromise();
+  }
+
+  private _handleTyphoonPath() {
+    const pointsFC = [];
+
+    const pointsAndPolygons = TYPHOON_PATH.features.map (feature => {
+      const lng = feature.geometry.coordinates[0];
+      const lat = feature.geometry.coordinates[1];
+      const errorRadiusDeg = feature.properties.radius;
+      pointsFC.push(turf.point(feature.geometry.coordinates))
+      // const ruler = new CheapRuler(lat, 'nauticalmiles');
+      // const errorRadiusKm = ruler.distance([lng, lat], [lng + errorRadiusDeg, lat]);
+      // console.log({lat, ruler, errorRadiusDeg, errorRadiusKm});
+      const circle = turf.circle([lng, lat], errorRadiusDeg, {steps: 32, units: 'kilometers', properties: feature.properties});
+
+      return {
+        circle,
+        errorRadius: errorRadiusDeg,
+        coords: feature.geometry.coordinates as Point
+      }
+    });
+
+
+    const fc = turf.featureCollection(pointsAndPolygons.map(pp => pp.circle));
+
+    // let combinedCircles = pointsAndPolygons[0].circle as any;
+    // for (let i=1; i<pointsAndPolygons.length; i++) {
+    //   combinedCircles = turf.union(combinedCircles, pointsAndPolygons[i].circle);
+      // var fc = turf.featureCollection([
+      //   turf.point([19.026432, 47.49134]),
+      //   turf.point([19.074497, 47.509548])
+      // ]);
+
+      // var combined = turf.combine(fc);
+    // }
+
+    // console.log(JSON.stringify(combinedCircles))
+    // console.log(JSON.stringify(fc));
+
+    const polygons = [];
+
+    pointsAndPolygons.forEach((pp, index) => {
+      if (index + 1 >= pointsAndPolygons.length) return;
+      const currentPoint = pp.coords;
+      const nextPP = pointsAndPolygons[index + 1];
+      const nextPoint = nextPP.coords;
+      const errorRadius = pp.errorRadius;
+
+      const ruler = new CheapRuler(currentPoint[1] + 24, 'kilometers');
+      let bearing = ruler.bearing(currentPoint, nextPoint);
+      let p1 = ruler.destination(nextPoint, errorRadius, bearing + 90);
+      const radius = index === 0 ? 0 : pointsAndPolygons[index - 1].errorRadius
+      let p2 = ruler.destination(currentPoint, radius, bearing + 90);
+      let p3 = ruler.destination(currentPoint, radius, bearing - 90);
+      let p4 = ruler.destination(nextPoint, errorRadius, bearing - 90);
+      const polygon = turf.polygon([[p1, p2, p3, p4, p1]]);
+      polygons.push(polygon);
+    });
+
+
+    const maw = polygons.concat(...pointsAndPolygons.map(pp => pp.circle))
+    let polygonUnion = maw[0] as any;
+    for (let i = 1; i < maw.length; i++) {
+      polygonUnion = turf.union(polygonUnion, maw[i]);
+    }
+
+    console.log({polygonUnion});
+
+
+    this.map.addLayer({
+      id: 'typhoon-path-fill',
+      type: 'fill',
+      source: {
+        type: 'geojson',
+        data: polygonUnion
+      },
+      paint: {
+        'fill-color': '#fff',
+        'fill-opacity': 0.3,
+      }
+    });
+
+    this.map.addLayer({
+      id: 'typhoon-path-line',
+      type: 'line',
+      source: {
+        type: 'geojson',
+        data: polygonUnion
+      },
+      paint: {
+        'line-color': '#000',
+        'line-width': 2,
+        'line-opacity': 0.6,
+        'line-blur': 0.5,
+      }
+    });
+
+    this.map.addLayer({
+      id: 'circle-outline',
+      type: 'line',
+      source: {
+        type: 'geojson',
+        data: fc,
+      },
+      paint: {
+        'line-opacity': 1,
+        'line-width': 2,
+        'line-color': [
+          "interpolate",
+          ["linear"],
+          ["get", "forecast"],
+          24,
+          "#e31c02",
+          48,
+          "#0202e3",
+          72,
+          "#00ad20",
+          96,
+          "#f7e814",
+          120,
+          "#9514f7",
+        ]
+      }
+    });
+
+    this.map.addLayer({
+      id: 'circles',
+      type: 'circle',
+      source: {
+        type: 'geojson',
+        data: turf.featureCollection(pointsFC),
+      },
+      paint: {
+        'circle-opacity': 1,
+        'circle-color': [
+          "interpolate",
+          ["linear"],
+          ["get", "forecast"],
+          24,
+          "#e31c02",
+          48,
+          "#0202e3",
+          72,
+          "#00ad20",
+          96,
+          "#f7e814",
+          120,
+          "#9514f7",
+        ]
+      }
+    });
+
   }
 }
 

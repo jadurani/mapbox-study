@@ -59,9 +59,6 @@ export class MapComponent implements OnInit {
 
   ngOnInit() {
     this.map.buildMap();
-    Highcharts.chart('graph-dom', this.options);
-    this.map.getData('166')
-      .then(v => console.log({v}));
   }
 
 }
