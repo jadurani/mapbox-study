@@ -171,10 +171,10 @@ export class MapService {
       const nextPoint = nextPP.coords;
       const errorRadius = pp.errorRadius;
 
-      const ruler = new CheapRuler(currentPoint[1], 'kilometers');
+      const ruler = new CheapRuler(currentPoint[1] + 24, 'kilometers');
       let bearing = ruler.bearing(currentPoint, nextPoint);
       let p1 = ruler.destination(nextPoint, errorRadius, bearing + 90);
-      const radius = index === 0 ? errorRadius : pointsAndPolygons[index - 1].errorRadius
+      const radius = index === 0 ? 0 : pointsAndPolygons[index - 1].errorRadius
       let p2 = ruler.destination(currentPoint, radius, bearing + 90);
       let p3 = ruler.destination(currentPoint, radius, bearing - 90);
       let p4 = ruler.destination(nextPoint, errorRadius, bearing - 90);
